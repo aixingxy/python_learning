@@ -727,9 +727,326 @@ False
 ```
 
 ### isidentifier()方法
+```
+# 判断字符串是否为合法标识符
+>>> my_str = '55'
+>>> my_str.isidentifier()
+False
+>>> my_str = '_123A'
+>>> my_str.isidentifier()
+True
+>>> my_str = '123A'
+>>> my_str.isidentifier()
+False
+```
+
+### islower()方法
+```
+# 判断是否都是小写
+>>> my_str = 'Alex'
+>>> my_str.islower()
+False
+>>> my_str = 'alex'
+>>> my_str.islower()
+True
+```
+
+### isnumeric()方法
+```
+# 判断字符串S中是否值包含数字在里面，如果是，返回True;否则返回False#
+>>> my_str = 'a123'
+>>> my_str.isnumeric()
+False
+>>> my_str = '123'
+>>> my_str.isnumeric()
+True
+```
 
 
+### isprintable()方法
+```
+# 判断一个字符串是否里面的字符都是可以打印出来的或者字符串是空的，如果是返回True;否则返回False
+>>> my_str = '  123'
+>>> my_str.isprintable()
+False
+>>> my_str = '123'
+>>> my_str.isprintable()
+True
+```
 
+### isspace()方法
+```
+# 判断字符串中是否都是空白
+>>> my_str = ' '
+>>> my_str.isspace()
+True
+>>> my_str = '   '
+>>> my_str.isspace()
+True
+>>> my_str = '  a '
+>>> my_str.isspace()
+False
+```
+
+### istitle()方法
+```
+# 判断是否首字母大写，如果是返回True;否则返回False
+>>> my_str = 'ABC'
+>>> my_str.istitle()
+False
+>>> my_str = 'Abc'
+>>> my_str.istitle()
+True
+```
+
+### isupper()方法
+```
+# 判断字符串中所有字符是否都是大写形式
+>>> my_str = 'ABC IS'
+>>> my_str.isupper()
+True
+>>> my_str = 'ABC Is'
+>>> my_str.isupper()
+False
+```
+
+### join()方法
+```
+# 拼接，字符串和列表直接的拼接
+
+# 1.字符串与字符串进行拼接，将拼接中的字符串的每一个元素与字符串中的元素进行拼接sign = '-'
+>>> name = 'abc'
+>>> sign.join(name)
+'a-b-c'
+
+# 2.字符串和列表进行拼接，列表中的每一个元素都与字符串的元素进行拼接
+>>> my_list = ['a', 'b', 'c']
+>>> sign.join(my_list)
+'a-b-c'
+```
+
+
+### ljust()方法
+```
+# 固定长度，字符串左边拼接指定的字符
+>>> my_str = 'name'
+>>> my_str.ljust(10, '-')
+'name------'
+```
+
+
+### rjust()方法
+```
+# 固定长度，字符串右边边拼接指定的字符
+>>> my_str = 'name'
+>>> my_str.rjust(10, '-')
+'------name'
+```
+
+
+### lower()方法
+```
+# 将字符串全部转化为小写形式
+>>> my_str = 'NAME'
+>>> my_str.lower()
+'name'
+>>> my_str = 'NaMe'
+>>> my_str.lower()
+'name'
+```
+
+### lstrip()方法
+```
+# 删除字符串左侧的空格，默认是删除空格，可以指定删除任意字符
+>>> my_str = ' NaMe '
+>>> my_str.lstrip()
+'NaMe '
+>>> my_str
+' NaMe '
+```
+
+### rstrip()方法
+```
+# 删除字符串右侧的空格
+>>> my_str = ' NaMe '
+>>> my_str.lstrip()
+'NaMe '
+>>> my_str
+' NaMe '
+```
+
+
+### strip()方法
+```
+# 删除字符串两侧的空格
+>>> my_str = ' NaMe '
+>>> my_str.strip()
+'NaMe'
+```
+
+### maketrans()与translate()方法
+```
+>>> intab = "aeiou"
+>>> outtab = "12345"
+>>> trantab = intab.maketrans(intab,outtab)
+>>> trantab
+{97: 49, 101: 50, 105: 51, 111: 52, 117: 53}
+>>> str = "This is string example .... wow!!!"
+>>> str.translate(trantab)
+'Th3s 3s str3ng 2x1mpl2 .... w4w!!!'
+# 把intab中每个元素与outtab中每个元素一一对应，然后translate()替换其中对应的元素。
+```
+
+### partition()方法
+```
+# 字符串分隔，以sep分隔为前中后三部分
+>>> str = "This is string example .... wow!!!"
+>>> str.partition('is')
+('Th', 'is', ' is string example .... wow!!!')
+>>> str.partition('T')
+('', 'T', 'his is string example .... wow!!!')
+```
+
+### replace()方法
+```
+# 字符串的查找替换
+# 默认全部替换
+>>> my_str = 'AbcAbc'
+>>> my_str.replace('A', '1')
+'1bc1bc'
+>>> my_str
+'AbcAbc'
+
+# 也可以指定替换的个数
+>>> my_str.replace('A', '1', 1) 
+'1bcAbc'
+>>> my_str
+'AbcAbc'
+```
+
+### rfind()方法
+```
+# 从右侧开始查找
+>>> my_str = 'AbcAbc'
+>>> my_str.rfind('A')
+3
+>>> my_str.rfind('d')
+-1
+```
+
+
+### rindex()方法
+```
+# 从字符串右侧查找指定字符的位置索引，如果查找不到就会报错。
+>>> my_str = 'AbcAbc'
+>>> my_str.rindex('b')
+4
+>>> my_str.rindex('d')
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+ValueError: substring not found
+```
+
+### rpartition()方法
+```
+# 字符串右侧开始查找分隔，与partition(self,sep)正好相反，示例如下,分隔字符串得到一个元组
+>>> my_str = 'AbcAbc'
+>>> my_str.rpartition('A')
+('Abc', 'A', 'bc')
+>>> my_str.rpartition('c')
+('AbcAb', 'c', '')
+```
+
+### rsplit()方法和split()方法
+```
+# rsplit()从右边以指定字符串分隔，分隔成一个列表，并且可以指定分隔的次数
+>>> my_str = "Alexsbegcex"
+>>> my_str.rsplit('e')
+['Al', 'xsb', 'gc', 'x']
+>>> my_str.rsplit('e', 0)
+['Alexsbegcex']
+>>> my_str.rsplit('e', 1)
+['Alexsbegc', 'x']
+>>> my_str.rsplit('e', 2)
+['Alexsb', 'gc', 'x']
+>>> my_str.rsplit('e', 3)
+['Al', 'xsb', 'gc', 'x']
+>>> my_str.rsplit('e', 4)
+['Al', 'xsb', 'gc', 'x']
+>>> my_str.rsplit('e', -1)
+['Al', 'xsb', 'gc', 'x']
+
+# split()从左边以指定字符串分隔，分隔成一个列表，并且可以指定分隔的次数
+>>> my_str = "Alexsbegcex"
+>>> my_str.split('e')
+['Al', 'xsb', 'gc', 'x']
+>>> my_str.split('e', 0)
+['Alexsbegcex']
+>>> my_str.split('e', 1)
+['Al', 'xsbegcex']
+>>> my_str.split('e', 2)
+['Al', 'xsb', 'gcex']
+>>> my_str.split('e', 3)
+['Al', 'xsb', 'gc', 'x']
+>>> my_str.split('e', 4)
+['Al', 'xsb', 'gc', 'x']
+>>> my_str.split('e', -1)
+['Al', 'xsb', 'gc', 'x']
+```
+
+### splitlines()方法
+```
+# 以"\n"换行符的形式分隔字符串>>> my_str = """
+... alex
+... aoi
+... marry
+... """
+>>> my_str.splitlines()
+['', 'alex', 'aoi', 'marry']
+```
+
+### startswith()方法
+```
+# 字符串是否以指定字符开始，可以指定起始位置
+>>> my_str = "Alexsbegcex"
+>>> my_str.startswith('A')
+True
+>>> my_str.startswith('w')
+False
+>>> my_str.startswith('e', 2, 5)
+True
+```
+
+### swapcase()方法
+```
+# 将一个字符串中所有大写字符转换为小写，小写转换为大写
+>>> my_str = "Alexsbegcex"
+>>> my_str.swapcase()
+'aLEXSBEGCEX'
+```
+
+### title()方法
+```
+# 将字符串的首字母转换为大写
+
+```
+
+### upper()方法
+```
+# 将字符串所有字母都转换为大写
+```
+
+### zfill()方法
+```
+# 指定宽度，不足左侧补零
+>>> my_str = "Alexsbegcex"
+>>> my_str.zfill(20)
+'000000000Alexsbegcex'
+>>> my_str
+'Alexsbegcex'
+```
+
+### 
 
 
 
