@@ -26,7 +26,7 @@ python3 xxx.py
 
 1. 注释不是越多越好，对于一目了然的代码，不需要添加注释
 2. 对于复杂的操作，应该在操作开始前写上若干行注释
-3. 对于不是一目了然的代码，应该在其行尾添加注释（注释应该知道离开代码2个空格）
+3. 对于不是一目了然的代码，应该在其行尾添加注释（注释应该至少离开代码2个空格）
 4. 绝不要描述代码，假设阅读的代码比你更多Python，他只是不知道你的代码要做什么？
 
 # 算数运算符
@@ -72,10 +72,10 @@ python3 xxx.py
   + 复数型(complex)
     + 主要用于科学计算
 + 非数字型
-  + 字符串
   + 列表
   + 元组
   + 字典
+  + 字符串
 
 在python中，所有非数字型变量都支持以下特点
 1. 都是一个序列`sequence`，也可以理解为容器
@@ -101,7 +101,7 @@ python3 xxx.py
 |:-|:-|:-|
 |**L.append(object) -> None**|append object to end|向列表末尾进行追加元素|
 |**L.clear() -> None**|remove all items from L|删除列表中所有的值|
-|**L.copy() -> list**|a shallow copy of L|复制一个列表|
+|**L.copy() -> list**|a shallow copy of L|复制(浅复制)一个列表|
 |**L.count(value) -> integer**|return number of occurrences of value|统计一个值(value)在一个列表中(list)出现的次数(发生的次数|
 |**L.extend(iterable) -> None**|extend list by appending elements from the iterable|合并两个列表|
 |**L.index(value, [start, [stop]]) -> integer**|return first index of value|查找指定元素在列表中的位置，index()方法必须指定第一个参数，要查找哪个值在列表中的位置，也可以指定查找的起始位置；如果查找不到，系统会报错|
@@ -136,6 +136,10 @@ python3 xxx.py
 >>> my_list = [1, 2, 3, 4, 5]
 >>> my_list.index(4)
 3
+>>> my_list.index(0)  # 如果没有找到会报错
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+ValueError: 0 is not in list
 ```
 
 ### insert(索引,数据)方法
@@ -183,10 +187,14 @@ python3 xxx.py
 ### remove(value)
 ```
 # 删除第一个出现的value值
->>> my_list = [1, 2, 3, 4, 5, 4]
 >>> my_list.remove(4)
 >>> my_list
-[1, 2, 3, 5, 4]
+[1, 2, 3, 5]
+>>> my_list.remove(4)  # 若没有找到会报错
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+ValueError: list.remove(x): x not in list
+>>>
 ```
 ### pop([index])方法
 ```
@@ -197,7 +205,7 @@ python3 xxx.py
 >>> my_list
 [1, 2, 3, 4]
 
-# pop(value)删除指定位置上的值
+# pop(index)删除指定位置上的值
 >>> my_list = [1, 2, 3, 4, 5]
 >>> my_list.pop(3)
 4
