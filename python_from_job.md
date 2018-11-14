@@ -152,3 +152,29 @@ if __name__ == '__main__':
     p = Person('Bob', 'male')
     p('Tom')
 ```
+# yield
+```python3
+>>> def foo():
+...     for x in range(10):
+...             yield x
+...
+>>> res = foo()
+>>> print(res)
+<generator object foo at 0x7fad70013840>
+>>> for i in res:
+...     print(i)
+...
+0
+1
+2
+3
+4
+5
+6
+7
+8
+9
+```
+
+# python vars() 函数
+vars() 函数返回对象object的属性和属性值的字典对象。
