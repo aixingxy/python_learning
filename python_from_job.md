@@ -178,3 +178,16 @@ if __name__ == '__main__':
 
 # python vars() 函数
 vars() 函数返回对象object的属性和属性值的字典对象。
+
+
+# os
+pyinstaller 打包包含pydub库的代码，需要加载ffmpeg和ffprobe
+从https://ffbinaries.com/downloads下载ffmpeg和ffprobe，放到工程目录下
+
+对于ffmpeg可以通过`AudioSegment.converter = '/path/to/ffmpeg'`来指定路径
+
+对于ffprobe通过在代码中设置环境
+```python3
+os.environ['PATH'] = os.environ['PATH'] + ":" + "/project/path/"
+```
+这样将整个工程移动到目标机器上就能找到ffprobe了
