@@ -191,3 +191,15 @@ pyinstaller 打包包含pydub库的代码，需要加载ffmpeg和ffprobe
 os.environ['PATH'] = os.environ['PATH'] + ":" + "/project/path/"
 ```
 这样将整个工程移动到目标机器上就能找到ffprobe了
+
+#  `__doc__用来访问模块，类声明或者函数的声明中第一个未被赋值的字符串 `
+
+```pytho3
+>>> class A():
+...     "first line"
+...     pass
+...
+>>> print(A().__doc__)
+first line
+
+```
