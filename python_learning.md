@@ -28,7 +28,7 @@ python3 xxx.py
 1. 注释不是越多越好，对于一目了然的代码，不需要添加注释
 2. 对于复杂的操作，应该在操作开始前写上若干行注释
 3. 对于不是一目了然的代码，应该在其行尾添加注释（注释应该至少离开代码2个空格）
-4. 绝不要描述代码，假设阅读的代码比你更多Python，他只是不知道你的代码要做什么？
+4. 绝不要描述代码，假设阅读的代码比你更懂Python，他只是不知道你的代码要做什么？
 
 # 算数运算符
 ## 01.算术运算符
@@ -89,15 +89,15 @@ python3 xxx.py
 参考： https://www.cnblogs.com/gengcx/category/987813.html
 
 
-# 01.列表
-## 1.1列表的定义
-+ `List`(列表)是python中使用最频繁的数据类型
+# 01 列表
+## 1.1 列表的定义
++ `list`(列表)是python中使用最频繁的数据类型
 + 专门用于存储一串信息
 + 列表用`[]`定义，数据之间使用`,`分隔
 + 列表的索引从`0`开始
 > 注意：从列表中取值时，如果超出索引范围，程序会报错
 
-## 1.2列表的常用操作
+## 1.2 列表的常用操作
 |方法名|作用|描述|
 |:-|:-|:-|
 |**L.append(object) -> None**|append object to end|向列表末尾进行追加元素|
@@ -133,7 +133,7 @@ python3 xxx.py
 
 ## 1.3 演练
 ### index(value)方法
-```
+```python
 >>> my_list = [1, 2, 3, 4, 5]
 >>> my_list.index(4)
 3
@@ -144,7 +144,7 @@ ValueError: 0 is not in list
 ```
 
 ### insert(索引,数据)方法
-```ipython
+```python
 # 向指定位置的前面插入元素
 >>> my_list = [1, 2, 3, 4, 5]
 >>> my_list.insert(2, 'a')
@@ -163,7 +163,7 @@ ValueError: 0 is not in list
 [1, 2, 3, 4, 5, 'a']
 ```
 ### extend()方法
-```
+```python
 # 合并两个列表
 >>> my_list = [1, 2, 3, 4, 5]
 >>> temp_list = ['a', 'b', 'c']
@@ -172,22 +172,23 @@ ValueError: 0 is not in list
 [1, 2, 3, 4, 5, 'a', 'b', 'c']
 ```
 ### 修改列表元素
-```
+```python
 >>> my_list = [1, 2, 3, 4, 5]
 >>> my_list[0] = 'a'
 >>> my_list
 ['a', 2, 3, 4, 5]
 ```
 ### 删除列表元素
-```
+```python
 >>> my_list = [1, 2, 3, 4, 5]
 >>> del my_list[0]
 >>> my_list
 [2, 3, 4, 5]
 ```
 ### remove(value)
-```
+```python
 # 删除第一个出现的value值
+>>> my_list = [1, 2, 3, 4, 5]
 >>> my_list.remove(4)
 >>> my_list
 [1, 2, 3, 5]
@@ -198,7 +199,7 @@ ValueError: list.remove(x): x not in list
 >>>
 ```
 ### pop([index])方法
-```
+```python
 # pop()不带参数默认删除最后一个
 >>> my_list = [1, 2, 3, 4, 5]
 >>> my_list.pop()
@@ -214,14 +215,14 @@ ValueError: list.remove(x): x not in list
 [1, 2, 3, 5]
 ```
 ### clear()方法
-```
+```python
 >>> my_list = [1, 2, 3, 4, 5]
 >>> my_list.clear()
 >>> my_list
 []
 ```
 ### sort()方法
-```
+```python
 >>> my_list = [1, 3, 5, 2, 4]
 >>> my_list.sort()
 >>> my_list
@@ -231,7 +232,7 @@ ValueError: list.remove(x): x not in list
 [5, 4, 3, 2, 1]
 ```
 ### reverse()方法
-```
+```python
 >>> my_list = [1, 2, 3, 4, 5]
 >>> my_list.reverse()
 >>> my_list
@@ -239,27 +240,28 @@ ValueError: list.remove(x): x not in list
 
 ```
 ## 关键字、函数和方法
-+ **关键字**是python内置的、具有特殊意义的标识符
+关键字是python内置的、具有特殊意义的标识符
 ```python
-import keyword
-print(keyword.kwlist)
-print(len(keyword.kwlist))
+>>> import keyword
+>>> print(keyword.kwlist)
+['False', 'None', 'True', 'and', 'as', 'assert', 'async', 'await', 'break', 'class', 'continue', 'def', 'del', 'elif', 'else', 'except', 'finally', 'for', 'from', 'global', 'if', 'import', 'in', 'is', 'lambda', 'nonlocal', 'not', 'or', 'pass', 'raise', 'return', 'try', 'while', 'with', 'yield']
+>>> print(len(keyword.kwlist))
+35
 ```
 > 关键字后面不需要使用括号
 
-+ **函数**封装了独立功能，可以直接调用
-```python
-函数名(参数）
-```
+函数封装了独立功能，可以直接调用
+
+`函数名(参数）`
 > 函数需要死记硬背
 + 方法和函数类似，同样是封装了独立的功能
 + 方法需要通过对象来调用，表示针对这个对象要做的操作
-```python
-对象.方法名(参数)
-```
-> 在变量后面输入`.`，然后针对这个变量要执行的操作，记忆起来比函数要简单多了
 
-## 1.4循环遍历
+`对象.方法名(参数)`
+
+在变量后面输入`.`，然后针对这个变量要执行的操作，记忆起来比函数要简单多了
+
+## 1.4 循环遍历
 + 遍历就是从头到尾以此从列表中获取数据
   + 在循环体内部针对每一个元素，执行相同的操作
 + 在python中为了提高列表的遍历效率，专门提供了迭代iteration遍历
@@ -271,8 +273,8 @@ for name in name_list:
     print(name)
 ```
 
-# 02.元组
-## 2.1元组的定义
+# 02 元组
+## 2.1 元组的定义
 + `Tuple`(元组)与列表类似，不同之处在于元组元素不能修改
   + **元组** 表示多个元素组成的序列
   + **元组** 在`python`开发中，有特定的应用场景
@@ -280,9 +282,9 @@ for name in name_list:
 + 元组使用`()`定义
 + 元组的索引从`0`开始
   + 索引就是数据在元组中的位置编号
-  + ==定义只包含一个元素的元组时，需要在元素后面添加逗号==
+  + **定义只包含一个元素的元组时，需要在元素后面添加逗号**
 
-```
+```python
 # 元组元素不能有重复
 >>> my_tuple = (1, 2, 3, 4, 5，1)
   File "<stdin>", line 1
@@ -314,49 +316,48 @@ TypeError: 'tuple' object doesn't support item deletion
 >>> my_tuple = (1, )
 >>> type(my_tuple)
 <class 'tuple'>
->>>
 ```
 
-## 2.2元组的常用操作
+## 2.2 元组的常用操作
 |方法名|作用|描述|
 |:-|:-|:-|
 |**T.count(value) -> integer**|return number of occurrences of value|数据在元组中出现的次数|
 |**T.index(value, [start, [stop]]) -> integer**|return first index of value|指定值在元组中的索引
 
-## 2.3演练
+## 2.3 演练
 
 ### count(value)方法
-```
+```python
 >>> my_tuple = (1, 2, 3, 4, 5)
 >>> my_tuple.count(1)
 1
 ```
 ### index(value)方法
-```
+```python
 >>> my_tuple = (1, 2, 3, 4, 5)
 >>> my_tuple.index(1)
 0
 ```
 
-# 03.字典
-## 3.1字典的定义
+# 03 字典
+## 3.1 字典的定义
 + `dinctionary`(字典)是除列表以外python之中最灵活的数据类型
-+ 字典统一可以用来存储多个数据
++ 字典可以用来存储多个数据
   + 通常用于存储描述一个物体的相关信息
 + 和列表的区别
   + 列表是有序的对象集合
   + 字典是无序的对象集合
 + 字典用`{}`定义
-+ 字典使用键值对存储数据，键值对之间使用`,`分隔
++ 字典使用`键:值`对存储数据，键值对之间使用`,`分隔
   + 键`key`是索引
   + 值`value`是数据
   + 键和值之间使用`:`分隔
   + 键必须是唯一的
 
-> 字典的key职能使用不可变类型的数据（数字、字符串、元组）
-> 列表、字典都是可变数据类型
+> 字典的key只能使用不可变类型的数据（数字、字符串、元组）。
+> 列表、字典都是可变数据类型。
 
-在python中，设置子弟啊的键值对时，会手下对key进行hash，来决定如何在内存中保存字典的数据，以方便后续对字典的操作：增、删、改、查
+在python中，设置字典的键值对时，会首先对key进行hash，来决定如何在内存中保存字典的数据，以方便后续对字典的操作：增、删、改、查
 
 + 键值对的`key`必须是不可变类型的数据
 + 键值对的`value`可以是任何类型的数据
@@ -382,10 +383,9 @@ xiaoming_dict.pop["age"]
 # 在删除指定键值对的时候，如果指定的key不存在，程序会报错
 ```
 
-## 3.2字典的常用操作
+## 3.2 字典的常用操作
 ```python
-xiaoming_dict = {"name":"小明"，
-                 "age":18}
+xiaoming_dict = {"name":"小明"，"age":18}
 # 1.统计键值对数量
 print(len(xiaoming_dict))
 
@@ -415,23 +415,23 @@ print(xiaoming_dict)
 |**D.popitem() -> (k, v)**|remove and return some (key, value) pair as a 2-tuple; but raise KeyError if D is empty|随机删除字典中的元素|
 |**D.update([E, ]**F) -> None**|Update D from dict/iterable E and F|更新列表中的值|
 
-## 3.3演练
+## 3.3 演练
 ### clear()方法
-```
+```python
 >>> my_dict = {1:'a', 2:'b', 3:'c'}
 >>> my_dict.clear()
 >>> my_dict
 {}
 ```
 ### copy()方法
-```
+```python
 >>> my_dict = {1:'a', 2:'b', 3:'c'}
 >>> temp_dict = my_dict.copy()
 >>> temp_dict
 {1: 'a', 2: 'b', 3: 'c'}
 ```
 #### fromkeys()方法
-```
+```python
 # 生成一个新字典，键(key)不同，值(value)相同
 >>> my_dict = {1:'a', 2:'b', 3:'c'}
 >>> temp_dic = my_dict.fromkeys([1, 2, 3], 'aa')
@@ -443,7 +443,7 @@ print(xiaoming_dict)
 >>>
 ```
 ### get()方法
-```
+```python
 >>> my_dict = {1:'a', 2:'b', 3:'c'}
 # 如果使用[]方法取值，如果是字典中存在的键，就直接返回值
 >>> my_dict[1]
@@ -466,8 +466,8 @@ KeyError: 4
 'no value'
 ```
 ### items()方法
-```
-# 返回字典中的键-值对
+```python
+# 返回字典中的键:值对
 >>> my_dict = {1:'a', 2:'b', 3:'c'}
 >>> my_dict.items()
 dict_items([(1, 'a'), (2, 'b'), (3, 'c')])
@@ -479,21 +479,21 @@ dict_items([(1, 'a'), (2, 'b'), (3, 'c')])
 3 c
 ```
 ### keys()方法
-```
+```python
 # 返回字典中的键(key)值
 >>> my_dict = {1:'a', 2:'b', 3:'c'}
 >>> my_dict.keys()
 dict_keys([1, 2, 3])
 ```
 ### values()方法
-```
+```python
 # 返回字典中的值(value)值
 >>> my_dict = {1:'a', 2:'b', 3:'c'}
 >>> my_dict.values()
 dict_values(['a', 'b', 'c'])
 ```
 ### pop()方法
-```
+```python
 >>> my_dict = {1:'a', 2:'b', 3:'c'}
 # 由于字典是无序的，所以一定要指定key值
 >>> my_dict.pop()
@@ -521,14 +521,14 @@ KeyError: 4
 'no key'
 ```
 ### popitem()方法
-```
+```python
 # 由于字典是无序的，所以popitem()没有指定参数，就是随机删除字典中的元素
 >>> my_dict = {1:'a', 2:'b', 3:'c'}
 >>> my_dict.popitem()
 (3, 'c')
 ```
 ### setdefault()方法
-```
+```python
 # 向字典中加入键-值对
 >>> my_dict = {1:'a', 2:'b', 3:'c'}
 >>> my_dict.setdefault(4, 5)
@@ -536,7 +536,7 @@ KeyError: 4
 >>> my_dict
 {1: 'a', 2: 'b', 3: 'c', 4: 5}
 
-# 如果没有指定key值，那么value默认值为None 
+# 如果没有指定key值，那么value默认值为None
 >>> my_dict = {1:'a', 2:'b', 3:'c'}
 >>> my_dict.setdefault(4)
 >>> my_dict
@@ -550,7 +550,7 @@ KeyError: 4
 {1: 'a', 2: 'b', 3: 'c'}
 ```
 ### update()方法
-```
+```python
 # 既可以新增键值对，也可以对已有键值对进行更新
 >>> my_dict = {1:'a', 2:'b', 3:'c'}
 >>> my_dict.update({1:1, 2:2, 3:3})
@@ -561,22 +561,22 @@ KeyError: 4
 {1: 1, 2: 2, 3: 3, 4: 4, 5: 5}
 ```
 
-# 04.字符串
+# 04 字符串
 
-## 4.2字符串中的转义字符
+## 4.1 字符串中的转义字符
 |转义字符|描述|
 |:-|:-|
 |\\|反斜杠符号|
 |\'|单引号|
 |\"|双引号|
-|\n|换行|
+|\n|换行(windows中是\n\r)|
 |\t|横向制表符|
 |\r|回车|
 
-## 4.2字符串的常用操作
+## 4.2 字符串的常用操作
 
 ### capitalize()方法
-```
+```python
 # 居首首字母大写，其他字母不大写
 >>> my_str = 'hello world'
 >>> my_str.capitalize()
@@ -586,7 +586,7 @@ KeyError: 4
 ```
 
 ### title()方法
-```
+```python
 # 所有单词的首字母都大写
 >>> my_str = 'atom is a boy and of some'
 >>> my_str.capitalize()
@@ -598,7 +598,7 @@ KeyError: 4
 ```
 
 ### casefold()方法
-```
+```python
 # 将大写字母转化为小写
 >>> my_str = 'HELLO WORLD'
 >>> my_str.casefold()
@@ -610,7 +610,7 @@ KeyError: 4
 ```
 
 ### center()方法
-```
+```python
 >>> my_str = '你好'
 >>> my_str.center(12)
 '     你好     '
@@ -623,7 +623,7 @@ KeyError: 4
 ```
 
 ### count()方法
-```
+```python
 # 返回在字符串中出现指定字符的个数，返回一个整数
 >>> my_str = 'abcabcbbbcddabc'
 >>> my_str.count('abc')
@@ -633,7 +633,7 @@ KeyError: 4
 ```
 
 ### encode()方法
-```
+```python
 # 转换字符串的编码格式
 >>> my_str = '你好'
 >>> my_str.encode('gbk')
@@ -643,7 +643,7 @@ b'\xc4\xe3\xba\xc3'
 ```
 
 ### endswith()方法
-```
+```python
 # 判断字符串以某个指定的字符结束，如果是，返回True，否则返回False
 >>> my_str = 'abc'
 >>> my_str.endswith('c')
@@ -651,7 +651,7 @@ True
 ```
 
 ### expandtabs()方法
-```
+```python
 # 将字符串中的tab键转化为空格，默认时8个位置的空格，可以自己设置参数
 >>> my_str = 'abc'
 >>> my_str.endswith('c')
@@ -666,9 +666,8 @@ True
 >>>
 ```
 
-
 ### find()方法
-```
+```python
 # 查找指定字符在字符串中的位置，返回位置索引，如果查找不到，则返回-1
 >>> my_str = 'abcabcbbbcddabc'
 >>> my_str.find('bc')
@@ -680,7 +679,7 @@ True
 ```
 
 ### index()方法
-```
+```python
 # index跟find一样是查找指定字符在字符串中的位置索引，不同的是，如果index查找失败，则报错
 >>> my_str = 'abcabcbbbcddabc'
 >>> my_str.index('bc')
@@ -695,7 +694,7 @@ ValueError: substring not found
 ```
 
 ### format_map()方法
-```
+```python
 # 格式化输出
 >>> my_str = "Name:{_name} Age:{_age} Job:{_job}".format_map({'_name':name, '_age':age, '_job':job})
 >>> my_str
@@ -703,7 +702,7 @@ ValueError: substring not found
 ```
 
 ### isalnum()方法
-```
+```python
 # 判断字符串中是都所有元素只有数字和字母组成,alnum是单词**alphanumeric的缩写，字母数字**
 >>> my_str = 'hello world'
 >>> my_str.isalnum()
@@ -714,7 +713,7 @@ True
 ```
 
 ### isalpha()方法
-```
+```python
 # 判断字符串中所有的元素是否都是字母组成
 >>> my_str = 'hello world'
 >>> my_str.isalpha()
@@ -725,7 +724,7 @@ True
 ```
 
 ### isdecimal()方法
-```
+```python
 # 如果字符串中只包含十进制的数字，则返回True；否则返回布尔值False.
 >>> my_str.isdecimal()
 False
@@ -734,9 +733,8 @@ False
 True
 ```
 
-
 ### isdigit()方法
-```
+```python
 # 判断字符串是否仅仅由数字组成
 >>> my_str = '123'
 >>> my_str.isdigit()
@@ -747,7 +745,7 @@ False
 ```
 
 ### isidentifier()方法
-```
+```python
 # 判断字符串是否为合法标识符
 >>> my_str = '55'
 >>> my_str.isidentifier()
@@ -761,7 +759,7 @@ False
 ```
 
 ### islower()方法
-```
+```python
 # 判断是否都是小写
 >>> my_str = 'Alex'
 >>> my_str.islower()
@@ -772,7 +770,7 @@ True
 ```
 
 ### isnumeric()方法
-```
+```python
 # 判断字符串S中是否值包含数字在里面，如果是，返回True;否则返回False#
 >>> my_str = 'a123'
 >>> my_str.isnumeric()
@@ -784,7 +782,7 @@ True
 
 
 ### isprintable()方法
-```
+```python
 # 判断一个字符串是否里面的字符都是可以打印出来的或者字符串是空的，如果是返回True;否则返回False
 >>> my_str = '  123'
 >>> my_str.isprintable()
@@ -795,7 +793,7 @@ True
 ```
 
 ### isspace()方法
-```
+```python
 # 判断字符串中是否都是空白
 >>> my_str = ' '
 >>> my_str.isspace()
@@ -809,7 +807,7 @@ False
 ```
 
 ### istitle()方法
-```
+```python
 # 判断是否首字母大写，如果是返回True;否则返回False
 >>> my_str = 'ABC'
 >>> my_str.istitle()
@@ -820,7 +818,7 @@ True
 ```
 
 ### isupper()方法
-```
+```python
 # 判断字符串中所有字符是否都是大写形式
 >>> my_str = 'ABC IS'
 >>> my_str.isupper()
@@ -831,7 +829,7 @@ False
 ```
 
 ### join()方法
-```
+```python
 # 拼接，字符串和列表直接的拼接
 
 # 1.字符串与字符串进行拼接，将拼接中的字符串的每一个元素与字符串中的元素进行拼接sign = '-'
@@ -847,7 +845,7 @@ False
 
 
 ### ljust()方法
-```
+```python
 # 固定长度，字符串左边拼接指定的字符
 >>> my_str = 'name'
 >>> my_str.ljust(10, '-')
@@ -856,7 +854,7 @@ False
 
 
 ### rjust()方法
-```
+```python
 # 固定长度，字符串右边边拼接指定的字符
 >>> my_str = 'name'
 >>> my_str.rjust(10, '-')
@@ -865,7 +863,7 @@ False
 
 
 ### lower()方法
-```
+```python
 # 将字符串全部转化为小写形式
 >>> my_str = 'NAME'
 >>> my_str.lower()
@@ -876,7 +874,7 @@ False
 ```
 
 ### lstrip()方法
-```
+```python
 # 删除字符串左侧的空格，默认是删除空格，可以指定删除任意字符
 >>> my_str = ' NaMe '
 >>> my_str.lstrip()
@@ -885,8 +883,9 @@ False
 ' NaMe '
 ```
 
+
 ### rstrip()方法
-```
+```python
 # 删除字符串右侧的空格
 >>> my_str = ' NaMe '
 >>> my_str.lstrip()
@@ -897,15 +896,16 @@ False
 
 
 ### strip()方法
-```
+```python
 # 删除字符串两侧的空格
 >>> my_str = ' NaMe '
 >>> my_str.strip()
 'NaMe'
 ```
 
+
 ### maketrans()与translate()方法
-```
+```python
 >>> intab = "aeiou"
 >>> outtab = "12345"
 >>> trantab = intab.maketrans(intab,outtab)
@@ -917,8 +917,9 @@ False
 # 把intab中每个元素与outtab中每个元素一一对应，然后translate()替换其中对应的元素。
 ```
 
+
 ### partition()方法
-```
+```python
 # 字符串分隔，以sep分隔为前中后三部分
 >>> str = "This is string example .... wow!!!"
 >>> str.partition('is')
@@ -927,8 +928,9 @@ False
 ('', 'T', 'his is string example .... wow!!!')
 ```
 
+
 ### replace()方法
-```
+```python
 # 字符串的查找替换
 # 默认全部替换
 >>> my_str = 'AbcAbc'
@@ -938,14 +940,14 @@ False
 'AbcAbc'
 
 # 也可以指定替换的个数
->>> my_str.replace('A', '1', 1) 
+>>> my_str.replace('A', '1', 1)
 '1bcAbc'
 >>> my_str
 'AbcAbc'
 ```
 
 ### rfind()方法
-```
+```python
 # 从右侧开始查找
 >>> my_str = 'AbcAbc'
 >>> my_str.rfind('A')
@@ -956,7 +958,7 @@ False
 
 
 ### rindex()方法
-```
+```python
 # 从字符串右侧查找指定字符的位置索引，如果查找不到就会报错。
 >>> my_str = 'AbcAbc'
 >>> my_str.rindex('b')
@@ -968,7 +970,7 @@ ValueError: substring not found
 ```
 
 ### rpartition()方法
-```
+```python
 # 字符串右侧开始查找分隔，与partition(self,sep)正好相反，示例如下,分隔字符串得到一个元组
 >>> my_str = 'AbcAbc'
 >>> my_str.rpartition('A')
@@ -978,7 +980,7 @@ ValueError: substring not found
 ```
 
 ### rsplit()方法和split()方法
-```
+```python
 # rsplit()从右边以指定字符串分隔，分隔成一个列表，并且可以指定分隔的次数
 >>> my_str = "Alexsbegcex"
 >>> my_str.rsplit('e')
@@ -1015,18 +1017,15 @@ ValueError: substring not found
 ```
 
 ### splitlines()方法
-```
+```python
 # 以"\n"换行符的形式分隔字符串>>> my_str = """
-... alex
-... aoi
-... marry
-... """
+>>> my_str = " alex aoi marry"
 >>> my_str.splitlines()
-['', 'alex', 'aoi', 'marry']
+[' alex aoi marry']
 ```
 
 ### startswith()方法
-```
+```python
 # 字符串是否以指定字符开始，可以指定起始位置
 >>> my_str = "Alexsbegcex"
 >>> my_str.startswith('A')
@@ -1038,7 +1037,7 @@ True
 ```
 
 ### swapcase()方法
-```
+```python
 # 将一个字符串中所有大写字符转换为小写，小写转换为大写
 >>> my_str = "Alexsbegcex"
 >>> my_str.swapcase()
@@ -1046,18 +1045,18 @@ True
 ```
 
 ### title()方法
-```
+```python
 # 将字符串的首字母转换为大写
 
 ```
 
 ### upper()方法
-```
+```python
 # 将字符串所有字母都转换为大写
 ```
 
 ### zfill()方法
-```
+```python
 # 指定宽度，不足左侧补零
 >>> my_str = "Alexsbegcex"
 >>> my_str.zfill(20)
@@ -1068,7 +1067,7 @@ True
 
 # python3深浅复制
 ## 赋值
-```
+```python
 >>> a = {"A1":1, "A2":2}
 >>> b = a
 >>> print('a', a, id(a))
@@ -1082,7 +1081,7 @@ b {'A1': 1, 'A2': 2} 4562897440
 ```
 
 ## 浅复制(列表、字典的copy属于浅拷贝)
-```
+```python
 # import copy
 # copy.copy()  #浅拷贝
 >>> a = {"A1":1, "A2":2}
@@ -1096,8 +1095,9 @@ b {'A1': 1, 'A2': 2} 4562896432
 >>> a
 {'A1': 1, 'A2': 2}
 ```
+
 对于浅复制来说，第一层创建的是新的内存地址，但是从第二层开始，指向的是同一个内存地址。
-```
+```python
 >>> a = [1, [21, 22, 23, 24], 3, 4, 5]
 >>> b = a.copy()
 # 第一层的地址是不同的
@@ -1124,7 +1124,7 @@ b {'A1': 1, 'A2': 2} 4562896432
 ```
 
 ## 深拷贝
-```
+```python
 >>> import copy
 >>> a = [1, [21, 22, 23, 24], 3, 4, 5]
 >>> b = copy.deepcopy(a)
@@ -1148,25 +1148,106 @@ b {'A1': 1, 'A2': 2} 4562896432
 [1, [21, 22, 23, 24], 3, 4, 5]
 ```
 
-# 多值参数
-+ 有时候可能需要一个函数能够处理的参数个数是不能确定的，这个时候，就可以使用多值参数
-+ python中哟两种多值参数
-  + 参数名前增加一个`*`可以接受`元组`
-  + 参数名前增强两个`*`可以接受`字典`
-+ 一般在给多值参数命名时，习惯使用以下两个名字
-  + `*args`--存放`元组`参数，前面有一个`*`
-  + `**kwargs`--存放`字典`参数，前面有两个`*`
+# 函数的参数
+##　位置参数
+---
+位置参数：调用函数时根据函数定义的参数位置来传递参数
+```python
+def user_info(name, age, gender):
+    print(name, age, gender)
+
+user_info('Tom', 20, '男')
+```
+> 注意：传递和定义参数的顺序及个数必须一致。
+
+## 关键字参数
+函数调用，通过“键=值”形式加以指定。可以让函数更加清晰、容易使用，同时也清除乐乐参数的顺序需求
+
+```python
+def user_info(name, age, gender):
+    print(name, age, gender)
+
+user_info('Tom', age=20, gender='男')
+user_info('Tom', gender='男', age=20)
+```
+> 注意：函数调用时，如果有位置参数时，位置参数必须在关键字参数的前面，但关键字参数之间不存在先后顺序。
+
+## 缺省参数
+缺省参数也叫默认参数，用于定义函数，为参数提供默认值，调用函数时可不传该默认参数的值（注意：所有位置参数必须出现在默认参数前，包括函数定义和调用）
+```python
+def user_info(name, age, gender="男"):
+    print(name, age, gender)
+
+user_info('Tom', 20)
+user_info('Tom', 20, '女')
+```
+> 注意：函数调用时，如果为缺省参数传值则修改默认参数值；否则使用这个默认值
+
+## 不定长参数
+不定长参数也叫可变参数。用于不确定调用的时候会传递多少个参数（不传参也可以）的场景。此时，可用包裹(packing)位置参数，或者包裹关键字参数，来进行参数传递，会显得非常方便。
+
+### 包裹位置传递
+```python
+def user_info(*args):
+    print(args)
+
+user_info("Tom")
+user_info("Tom", 20)
+```
+> 注意：传进去的所有参数都会被args变量收集，它会根据传进参数的位置合并为一个元祖(tuple)。
+> args是元祖类型，这就是包裹位置传递
+
+### 包裹关键字传递
+```python
+def user_info(**args):
+    print(args)
+
+user_info(name="Tom")
+user_info(name="Tom", age=20)
+```
+> 综上：无论是包裹位置传递还是包裹关键字传递，都是一个组包的过程
+
+# 高阶函数
+## map()
+map(func, lst)，将传入的函数变量func作用到lst变量的每个元素中，并将结果组成迭代器返回。
+```python
+# 计算list1序列中各个数字的2次方
+list1 = [1, 2, 3, 4, 5]
+def func(x):
+    return x**2
+
+result = map(func, list1)
+print(result)  # <map object at 0x7f2916214da0>
+print(list(result))  # [1, 4, 9, 16, 25]
+
 
 ```
->>> def demo(num, *args, **kwargs):
-...     print(num)
-...     print(args)
-...     print(kwargs)
-...
->>> demo(1, 2, 3, 4, 5, name='小明', age=18, gender=True)
-1
-(2, 3, 4, 5)
-{'name': '小明', 'age': 18, 'gender': True}
+
+## reduce()
+reduce(func, lst)，其中func必须有两个参数。每次计算func的结果
+> 注意：reduce()传入的参数必须接收2个参数。需要导入functools包
+```python
+# 计算list1序列中各个数字的累加和
+import functools
+list1 = [1, 2, 3, 4, 5]
+def func(a, b):
+    return a + b
+
+result = functools.reduce(func, list1)
+print(result)  # 15
 ```
 
 
+## filter()
+filter(func, lst)用于过滤序列，过滤掉不符合条件的元素，返回一个filter对象。
+```python
+# 过滤掉list1中的奇数
+list1 = [1, 2, 3, 4, 5]
+def func(x):
+    return x % 2 == 0
+
+result = filter(func, list1)
+
+print(result)  # <filter object at 0x7fe1fae07a58>
+print(list(result))  # [2, 4]
+```
