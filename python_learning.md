@@ -1251,3 +1251,39 @@ result = filter(func, list1)
 print(result)  # <filter object at 0x7fe1fae07a58>
 print(list(result))  # [2, 4]
 ```
+
+# lambda的参数形式
+## 无参数
+```python
+>>> fun1 = lambda : 100
+>>> print(fun1())
+100
+```
+
+## 一个参数
+```python
+>>> fun1 = lambda a: a
+>>> print(fun1("hello world"))
+hello world
+```
+
+## 默认参数
+```python
+>>> fun1 = lambda a, b, c=100: a + b + c
+>>> print(fun1(10, 20))
+130
+```
+
+## 可变参数
+```python
+>>> fun1 = lambda *args: args
+>>> print(fun1(10, 20, 30))
+(10, 20, 30)
+```
+
+## 可变参数
+```python
+>>> fun1 = lambda **args: args
+>>> print(fun1(name="python", age=20))
+{'name': 'python', 'age': 20}
+```
