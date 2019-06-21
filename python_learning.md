@@ -1287,3 +1287,140 @@ hello world
 >>> print(fun1(name="python", age=20))
 {'name': 'python', 'age': 20}
 ```
+
+# 多线程
+## 多线程默认情况
+在默认情况下，主线程执行完自己的任务后，就退出了，此时子线程会继续执行自己的任务，直到自己的任务结束。
+
+```python
+# -*- coding: utf-8 -*-
+import time
+import threading
+
+
+def run():
+    time.sleep(2)
+    print("当前线程的名字", threading.current_thread().name)
+
+
+if __name__ == '__main__':
+    start_time = time.time()
+
+    print("这是主线程", threading.current_thread().name)
+    thread_list = []
+    for i in range(5):
+        t = threading.Thread(target=run)
+        thread_list.append(t)
+
+    for t in thread_list:
+        t.start()
+
+    print("主线程结束！", threading.current_thread().name)
+    print("使用时间", time.time() - start_time)
+
+
+"""
+这是主线程 MainThread
+主线程结束！ MainThread
+使用时间 0.0007381439208984375
+当前线程的名字 Thread-3
+当前线程的名字 Thread-1
+当前线程的名字 Thread-2
+当前线程的名字 Thread-4
+当前线程的名字 Thread-5
+
+分析：
+1.计时的是主线程，在主线程结束后就打印时间了
+2.主线程的任务完成之后，主线程随之结束，子线程继续执行自己的任务，知道全部的子线程的任务全部结束，程序结束
+"""
+```
+
+## 设置守护线程
+设置子线程为守护线程时，主线程一旦结束，则全部线程全部被终止执行。
+可能会出现的状况是，子线程的任务还没完全执行结束，就被被迫终止了。
+
+```python
+# -*- coding: utf-8 -*-
+import time
+import threading
+
+
+def run():
+    time.sleep(2)
+    print("当前线程的名字", threading.current_thread().name)
+
+
+if __name__ == '__main__':
+    start_time = time.time()
+
+    print("这是主线程", threading.current_thread().name)
+    thread_list = []
+    for i in range(5):
+        t = threading.Thread(target=run)
+        thread_list.append(t)
+
+    for t in thread_list:
+        t.setDaemon(True)
+        t.start()
+
+    print("主线程结束！", threading.current_thread().name)
+    print("使用时间", time.time() - start_time)
+
+"""
+这是主线程 MainThread
+主线程结束！ MainThread
+使用时间 0.0008144378662109375
+
+分析：
+守护的是主线程，希望主线程结束的时候子线程也结束
+主线程结束后，子线程也结束了，整个程序退出了
+"""
+```
+
+## join()
+join所完成的工作就是线程同步，即主线程任务结束之后，进入阻塞状态，一直等待其他的子线程执行结束之后，主线程再终止
+
+```python
+# -*- coding: utf-8 -*-
+import time
+import threading
+
+
+def run():
+    time.sleep(2)
+    print("当前线程的名字", threading.current_thread().name)
+
+
+if __name__ == '__main__':
+    start_time = time.time()
+
+    print("这是主线程", threading.current_thread().name)
+    thread_list = []
+    for i in range(5):
+        t = threading.Thread(target=run)
+        thread_list.append(t)
+
+    for t in thread_list:
+        t.setDaemon(True)
+        t.start()
+
+    for t in thread_list:
+        t.join()
+
+    print("主线程结束！", threading.current_thread().name)
+    print("使用时间", time.time() - start_time)
+
+"""
+这是主线程 MainThread
+当前线程的名字 Thread-1
+当前线程的名字 Thread-3
+当前线程的名字 Thread-5
+当前线程的名字 Thread-2
+当前线程的名字 Thread-4
+主线程结束！ MainThread
+使用时间 2.002138614654541
+
+分析：
+运行的时候可以发现，主线程在等待子线程结束后才结束，主线程结束后才打印时间
+"""
+```
