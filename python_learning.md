@@ -1424,3 +1424,298 @@ if __name__ == '__main__':
 运行的时候可以发现，主线程在等待子线程结束后才结束，主线程结束后才打印时间
 """
 ```
+
+
+## 多线程共享全局变量问题
+```python
+# -*- coding: utf-8 -*-
+
+import threading
+import time
+
+g_num = 0
+
+
+# work1
+def work1():
+    """一个线程往全局变量写程序"""
+    global g_num
+    for i in range(10):
+        g_num += 10
+    print("work1", g_num)  # 100
+
+
+# work2
+def work2():
+    """一个线程读全局变量"""
+    print("work2", g_num)  # 100 g_num可以在对个线程中共享
+
+
+if __name__ == '__main__':
+    # 创建2个子线程
+    t1 = threading.Thread(target=work1)
+    t2 = threading.Thread(target=work2)
+
+    # 启动线程
+    t1.start()
+    t2.start()
+
+    # 让主线程等待子线程结束后再结束
+    # 循环判断线程数，当线程数不为1时，主线程等待子线程结束
+    while len(threading.enumerate()) != 1:
+        time.sleep(1)
+
+    # 在t1和t2线程执行完成后再打印
+
+    print("main", g_num)  # 100
+
+"""
+work1 100
+work2 100
+main 100
+"""
+```
+
+## 多线程共享全局变量——问题
+```python
+# -*- coding: utf-8 -*-
+
+import threading
+import time
+
+g_num = 0
+
+
+# work1
+def work1():
+    """一个线程往全局变量写程序"""
+    global g_num
+    for i in range(100000000):
+        g_num += 1
+    print("work1", g_num)
+
+
+# work2
+def work2():
+    """另一个线程也往全局变量写程序"""
+    global g_num
+    for i in range(10000000):
+        g_num += 1
+    print("work2", g_num)
+
+
+if __name__ == '__main__':
+    # 创建2个子线程
+    t1 = threading.Thread(target=work1)
+    t2 = threading.Thread(target=work2)
+
+    # 启动线程
+    t1.start()
+    t2.start()
+
+    # 让主线程等待子线程结束后再结束
+    # 循环判断线程数，当线程数不为1时，主线程等待子线程结束
+    while len(threading.enumerate()) != 1:
+        time.sleep(1)
+
+    # 在t1和t2线程执行完成后再打印
+
+    print("main", g_num)  # 100
+
+"""
+work2 14073822
+work1 103585455
+main 103585455
+
+结论：
+当多个线程修改同一个资源的时候，会出现资源竞争，导致计算有误
+"""
+```
+
+### 解决方法——使用join()方法
+```python
+# -*- coding: utf-8 -*-
+
+import threading
+import time
+
+g_num = 0
+
+
+# work1
+def work1():
+    """一个线程往全局变量写程序"""
+    global g_num
+    for i in range(10000000):
+        g_num += 1
+    print("work1", g_num)
+
+
+# work2
+def work2():
+    """另一个线程也往全局变量写程序"""
+    global g_num
+    for i in range(10000000):
+        g_num += 1
+    print("work2", g_num)
+
+
+if __name__ == '__main__':
+
+    # 创建2个子线程
+    t1 = threading.Thread(target=work1)
+    t2 = threading.Thread(target=work2)
+
+    # 启动线程
+    t1.start()
+    t1.join()  # 优先让t1先执行完，（join方法就是某个线程优先执行）
+    t2.start()
+
+    # 让主线程等待子线程结束后再结束
+    # 循环判断线程数，当线程数不为1时，主线程等待子线程结束
+    while len(threading.enumerate()) != 1:
+        time.sleep(1)
+
+    # 在t1和t2线程执行完成后再打印
+
+    print("main", g_num)  # 100
+
+"""
+work2 14073822
+work1 103585455
+main 103585455
+
+结论：
+当多个线程修改同一个资源的时候，会出现资源竞争，导致计算有误
+"""
+```
+
+## 同步和异步
+同步：多任务，多个任务之间执行的时候要求有先后顺序，必须一个先执行完成之后，另一个才能继续执行，只有一个主线程，如：你说完，我再说（同一时间只能做一件事情）
+
+异步：多个任务之间执行没有先后顺序，可以同时运行，执行的先后顺序不会有什么影响，存在的多条运行主线。如：发微信（可以不用等对方回复，继续发），点外卖（点了外卖后，可以继续忙其他的事情，而不是坐等外卖，啥也不做）
+
+线程的锁机制：当线程获取资源后，立刻进行锁定，资源使用完毕后再解锁，有效地保证同一时间之后线程在使用资源。
+
+### 互斥锁
+当多个线程几乎同时修改某一个共享数据的时候，需要进行同步控制。
+
+线程同步能够保证多个线程安全访问竞争资源，最贱的同步机制是引入互斥锁。
+
+互斥锁为资源引入一个状态：锁定/非锁定
+
+某个线程变更共享资源时，先将其锁定，此时资源的状态为“锁定”，其他线程不能更改，直到该线程释放资源，将资源的状态变成“非锁定”，其他的线程才能再次锁定该资源。互斥锁保证了每次只有一个线程进行写入操作，从而保证了多线程情况下数据的正确执性。
+
+threading模块中定义了Lock类，可以方便地处理锁定
+
+```python
+# 创建锁
+mutex = threading.Lock()
+# 锁定
+mutex.acquire()
+# 释放
+mutex.release()
+
+```
+注意：
++ 如果 这个锁之前是没有上锁的，那么acquire不会堵塞
++ 如果在调用acquire对这个锁上锁之前已经被其他线程上了锁，那么此时acquire会堵塞，直到这个锁被解锁为止。
+### 互斥锁的使用
+```python
+# -*- coding: utf-8 -*-
+
+import threading
+import time
+
+g_num = 0
+
+
+# work1
+def work1():
+    """一个线程往全局变量写程序"""
+    global g_num
+    for i in range(10000000):
+        # 上锁
+        lock1.acquire()
+        g_num += 1
+        # 解锁
+        lock1.release()
+    print("work1", g_num)
+
+
+# work2
+def work2():
+    """另一个线程也往全局变量写程序"""
+    global g_num
+    for i in range(10000000):
+        lock1.acquire()
+        g_num += 1
+        lock1.release()
+    print("work2", g_num)
+
+
+if __name__ == '__main__':
+
+    # 创建一把互斥锁
+    lock1 = threading.Lock()
+
+    # 创建2个子线程
+    t1 = threading.Thread(target=work1)
+    t2 = threading.Thread(target=work2)
+
+    # 启动线程
+    t1.start()
+    t2.start()
+
+    # 让主线程等待子线程结束后再结束
+    # 循环判断线程数，当线程数不为1时，主线程等待子线程结束
+    while len(threading.enumerate()) != 1:
+        time.sleep(1)
+
+    # 在t1和t2线程执行完成后再打印
+
+    print("main", g_num)  # 100
+"""
+work1 19890824
+work2 20000000
+main 20000000
+
+"""
+```
+
+## 死锁
+在线程间共享多个资源，如果两个线程分别占有一部分资源并且同时等待对方的资源，就会造成死锁。
+
+
+
+# 进程
+工作中，任务数往往大于cpu的核数，即一定有一些任务正在执行，而另外一些任务在等待cpu进行执行，因此导致了有不同的状态。
+
+就绪状态：运行的条件已经满足，正在等待cpu执行
+执行态：cpu正在执行其功能
+等待态：等待某些条件满足，例如一个程序sleep了，此时就处于等待状态
+
+### 进程的基本使用
+```python
+# -*- coding: utf-8 -*-
+
+import multiprocessing
+import time
+
+
+def work1():
+    for i in range(10):
+        print("正在运行 work1 ....")
+        time.sleep(0.5)
+
+
+if __name__ == '__main__':
+    process_obj = multiprocessing.Process(target=work1)
+    process_obj.start()
+
+    print("主进程")
+
+"""
+程序启动以后有一个默认的主进程，在主进程中有一个主线程
+"""
+```
