@@ -1800,3 +1800,277 @@ if __name__ == '__main__':
 正在运行 work1 .... 6560 父进程 6556
 """
 ```
+
+## 进程间共享全局变量的问题
+```python
+# -*- coding: utf-8 -*-
+
+import multiprocessing
+import time
+
+g_num = 10
+
+
+def work1():
+    global g_num
+    for i in range(10):
+        g_num += 1
+
+    print("work1", g_num)
+
+
+def work2():
+    print("work2", g_num)
+
+
+if __name__ == '__main__':
+    work1_process = multiprocessing.Process(target=work1)
+    work2_process = multiprocessing.Process(target=work2)
+    work1_process.start()
+    work2_process.start()
+
+    time.sleep(3)
+    print("mian", g_num)
+"""
+子进程之间不能实现全局变量的共享
+"""
+```
+
+## 守护进程
+
++ 进程守护：当主进程结束时，子进程也随之结束  
++ 结束子进程
+
+```python
+# -*- coding: utf-8 -*-
+
+import multiprocessing
+import time
+
+
+def work1():
+    for i in range(10):
+        print("正在运行 work1...")
+        time.sleep(0.5)
+
+
+if __name__ == '__main__':
+    work1_object = multiprocessing.Process(target=work1)
+    # 设置子进程守护主进程
+    work1_object.daemon = True
+    work1_object.start()
+    time.sleep(2)
+    print("主进程")
+    # terminate()终止子进程的执行
+    work1_object.terminate()
+    exit()
+```
+
+## 进程和线程的对比
+
+## 消息队列-基本操作
+
+使用消息队列的目的：为了进程间的通信
+```python
+# -*- coding: utf-8 -*-
+
+import multiprocessing
+
+# 1)创建队列（指定长度）
+# 2)放值
+# 3)取值
+
+# 1)创建队列（指定长度）
+queue = multiprocessing.Queue(maxsize=5)
+# 2)放值
+queue.put(1)
+queue.put("hello")
+queue.put([1, 2, 3])
+queue.put((4, 5, 6))
+queue.put({"a": 1, "b": 10})
+# queue.put(110)  # 长度为5，放入第6个数据后，队列进入了阻塞状态，默认会等待队列先取出值再放入新的值。
+# queue.put_nowait(10) 如果队列满了直接报错
+# 3)取值
+print(queue.get())
+print(queue.get())
+print(queue.get())
+print(queue.get())
+print(queue.get())
+print(queue.get())  # 当队列已经空的时候，再次get()，程序进入阻塞状态，等待放入新的值，然后再取
+print(queue.get_nowait())  # 当列表已空，直接报错
+
+```
+
+## 消息队列－常用判断
+```python
+# -*- coding: utf-8 -*-
+
+import multiprocessing
+
+# 1)创建队列（指定长度）
+# 2)放值
+# 3)取值
+
+# 1)创建队列（指定长度）
+queue = multiprocessing.Queue(maxsize=5)
+# 2)放值
+queue.put(1)
+queue.put("hello")
+queue.put([1, 2, 3])
+queue.put((4, 5, 6))
+queue.put({"a": 1, "b": 10})
+
+# 判断队列是否已满
+print("队列是否为满", queue.full())
+
+
+# 3)取值
+print(queue.get())
+print(queue.get())
+print(queue.get())
+print(queue.get())
+
+# 取队列中消息的个数
+print("队列中消息的个数", queue.qsize())
+
+print(queue.get())
+
+# 判断队列是否已空
+print("队列是否已空", queue.empty())
+
+```
+
+## 使用queue实现进程间的通信
+
+```python
+# -*- coding: utf-8 -*-
+import time
+import multiprocessing
+
+
+def write_queue(queue):
+    for i in range(10):
+        if queue.full():
+            print("队列已满！")
+            break
+        queue.put(i)
+        print("写入成功，已经写入：", i)
+        time.sleep(0.5)
+
+
+def read_queue(queue):
+    while True:
+        if queue.qsize() == 0:
+            print("队列已空")
+            break
+        value = queue.get()
+        print("已经读取：", value)
+
+
+
+if __name__ == '__main__':
+    queue = multiprocessing.Queue(5)
+
+    process1 = multiprocessing.Process(target=write_queue, args=(queue,))
+    process2 = multiprocessing.Process(target=read_queue, args=(queue,))
+
+    process1.start()
+    process1.join()  # 优先让写进程执行结束后，再读取数据
+    process2.start()
+```
+
+## 进程池
+当创建的子进程数量巨大的时候，可以使用multiprocessing模块提供的Pool方法
+
+初始化Pool时，可以指定一个最大进程数，当有新的请求提交到Pool中时，如果池还没有满，那么就会创建一个新的进程用来执行该请求；但如果池中的进程数已经达到指定的最大值，那么该请求就会等待，直到池中有进程结束，才会用之前的进程来执行新的任务。
+
+### 核心方法
++ apply(): 进程池以同步的方式执行
++ apply_async(func， args, kwds): 使用非阻塞的方式调用func
+  - 并行执行，阻塞方式必须等待上一个进程退出才能执行下一个进程
+
+```python
+# -*- coding: utf-8 -*-
+import time
+import multiprocessing
+
+
+# 1.创建一个函数，用于模拟文件拷贝
+# 2.创建一个进程池，长度为3
+# 3.进程池同步的方式拷贝文件
+# 4.进程池异步的方式拷贝文件
+
+
+def copy_work():
+    print("正在拷贝文件...", multiprocessing.current_process())
+    time.sleep(1)
+
+
+if __name__ == '__main__':
+    # 进程池创建
+    pool = multiprocessing.Pool(3)
+
+    for i in range(10):
+        # cooy_work()
+        # 3.进程池同步的方式拷贝文件
+        # pool.apply(copy_work)  # 同步的方式
+        # 4.进程池异步的方式拷贝文件
+        #如果使用异步方式，需要做两点：
+        # 1)pool.close() 表示不再接收新的任务
+        # 2)主进程不再等待进程池结束后再退出，需要进程池join()
+        # pool.join()让主进程等待进程池执行结束后再退出
+
+        pool.apply_async(copy_work)
+    pool.close()
+    pool.join()
+
+```
+
+## 进程中进程间的通信queue
+```python
+# -*- coding: utf-8 -*-
+import time
+import multiprocessing
+
+
+def write_queue(queue):
+    for i in range(10):
+        if queue.full():
+            print("队列已满！")
+            break
+        queue.put(i)
+        print("写入成功，已经写入：", i)
+        time.sleep(0.5)
+
+
+def read_queue(queue):
+    while True:
+        if queue.qsize() == 0:
+            print("队列已空")
+            break
+        value = queue.get()
+        print("已经读取：", value)
+
+
+
+if __name__ == '__main__':
+
+    # 1、创建进程池
+    pool = multiprocessing.Pool()
+    # 2、创建进程池中的队列
+    queue = multiprocessing.Manager().Queue(5)
+    # 3、使用同步进程池执行
+    # pool.apply(write_queue, (queue,))
+    # pool.apply(read_queue, (queue,))
+
+    # 4、使用异步进程池执行
+    # apply_async返回值ApplyResult对象，该对象有一个wait()的方法
+    # wait()方法类似join()，表示让当前进程执行完毕后，后续进程才能启动
+    result = pool.apply_async(write_queue, (queue, ))
+    result.wait()
+
+    pool.apply_async(read_queue, (queue, ))
+    pool.close()  # 表示不在接收新的任务
+    pool.join()  # 主进程等待进程池执行结束后再退出
+
+```
