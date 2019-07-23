@@ -629,7 +629,7 @@ KeyError: 4
 >>> my_str.count('abc')
 3
 >>> my_str.count('abcd')  # 若不存在就返回0
-0  
+0
 ```
 
 ### encode()方法
@@ -1104,7 +1104,7 @@ b {'A1': 1, 'A2': 2} 4562896432
 >>> print(a, id(a))
 [1, [21, 22, 23, 24], 3, 4, 5] 4562900872
 >>> print(b, id(b))
-[1, [21, 22, 23, 24], 3, 4, 5] 4562891464  
+[1, [21, 22, 23, 24], 3, 4, 5] 4562891464
 
 # 第二层开始地址就相同了
 >>> print(a[1], id(a[1]))
@@ -1721,7 +1721,7 @@ if __name__ == '__main__':
 ```
 
 
-## 获取进程的编号，获取进程的夫id
+## 获取进程的编号，获取进程的父id
 + 获取进程的编号
 ```python
 multiprocessing.current_process().pid
@@ -1838,7 +1838,7 @@ if __name__ == '__main__':
 
 ## 守护进程
 
-+ 进程守护：当主进程结束时，子进程也随之结束  
++ 进程守护：当主进程结束时，子进程也随之结束
 + 结束子进程
 
 ```python
@@ -2072,5 +2072,131 @@ if __name__ == '__main__':
     pool.apply_async(read_queue, (queue, ))
     pool.close()  # 表示不在接收新的任务
     pool.join()  # 主进程等待进程池执行结束后再退出
+
+```
+
+
+## 并行与并发
+并行是指两个或多个进程同时运行。这是在多核心平台上可以实现，比如每个处理器上运行一个进程。
+并发是指在同一个处理器上运行多个进程。在操作系统中，通常使用时隙(time slicing)技术来解决这类问题。但是，这种办法并非真正的并发，只是由于处理器切换任务的速度非常快，看起来像是并行的。
+
+
+# UDP
++ 发送端
+
+```python
+# -*- coding: utf-8 -*-
+"""
+1. 导入模块
+2. 创建套接字
+3. 绑定端口(发送方)
+4. 发送数据
+*. 接受数据(可选)
+5. 关闭套接字
+
+"""
+
+import socket
+
+# AF_INET: 表示IP4
+# SOCK_DGRAM: 表示UPD传输协议
+udp_client_sock = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
+
+udp_client_sock.bind(("", 8888))  # 客户端可以不绑定端口，但是服务器端必须绑定端口
+
+udp_client_sock.sendto("你好".encode(), ("192.168.1.232", 8080))
+
+recv_data = udp_client_sock.recvfrom(1024)
+print("来自%s的信息：%s" % (str(recv_data[1]), recv_data[0].decode()))
+
+udp_client_sock.close()
+```
+
++ 接收端
+```python
+# -*- coding: utf-8 -*-
+import socket
+
+udp_server_sock = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
+
+udp_server_sock.bind(("", 8080))
+
+recv_data = udp_server_sock.recvfrom(1024)
+
+print("来自%s的信息：%s" % (str(recv_data[1]), recv_data[0].decode()))
+
+udp_server_sock.sendto("hello".encode(), ("192.168.1.153", 8888))
+
+udp_server_sock.close()
+```
+
+# TCP
++ 客户端
+```python
+# -*- coding: utf-8 -*-
+"""
+1.导入模块
+2.创建套接字
+3.建立链接
+4.发送数据
+5.关闭套接字
+
+"""
+import socket
+
+# 创建套接字
+tcp_client_socket = socket.socket(family=socket.AF_INET, type=socket.SOCK_STREAM)
+
+# 建立链接
+tcp_client_socket.connect(("192.168.1.232", 8080))
+
+while True:
+    send_text = input()
+    if send_text:
+        # 发送数据
+        tcp_client_socket.send(send_text.encode())
+    else:
+        print("客户端停止输入！")
+        break
+# 关闭套接字
+tcp_client_socket.close()
+```
+
++ 服务器端
+```python
+# -*- coding: utf-8 -*-
+
+"""
+1.导入模块
+2.创建套接字
+3.绑定端口
+4.开启监听
+6.接受数据
+7.关闭套接字
+"""
+import socket
+
+tcp_server_socket = socket.socket(family=socket.AF_INET, type=socket.SOCK_STREAM)
+tcp_server_socket.bind(("192.168.1.232", 8080))
+# 设置listen() 作用是设置tcp为被动监听模式，不能主动发送数据
+# 128 允许接受的最大链接数，在Windows中有效，在Linux中无效
+tcp_server_socket.listen(128)
+while True:
+    new_clinet_sockt, client_ip_port = tcp_server_socket.accept()
+    print("新客户端来了！", client_ip_port)
+    while True:
+        recv_data = new_clinet_sockt.recv(1024)
+        if recv_data:  # 当接受数据为空时，表示客户端断开链接
+            recv_text = recv_data.decode()
+
+            print("接受来自：%s的信息：%s" % (str(client_ip_port), recv_text))
+        else:
+            print("客户端断开链接")
+            break
+
+    new_clinet_sockt.close()
+
+tcp_server_socket.close()
+
 
 ```
