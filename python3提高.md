@@ -138,6 +138,7 @@ print(s[StudentEnum.NAME])
 将字典中的各项转换为元祖，使用内置函数sorted排序（因为元祖是可以比较大小的）
 + 将字典中的项转化为(值, 键)元祖。（列表解析或zip）
 
+
 ```bash
 # 元祖比较大小
 >>> (1, 2) < (1, 1)
@@ -145,44 +146,40 @@ False
 ```
 
 ```python
-
-from random import randint
-
-d = {k: randint(60, 100) for k in "abcdefg"}
-
-# 列表解析
-l = [(v, k) for k, v in d.items()]
-print(sorted(l, reverse=True))
-
-# zip
-l = list(zip(d.values(), d.keys()))
-print(sorted(l, reverse=True))
-
-# 直接使用sorted的key方法
-print(sorted(d.items(), key=lambda item: item[1], reverse=True))
-
-
+>>> from random import randint
+>>> d = {k: randint(60, 100) for k in "abcdekg"}
+>>> d
+{'a': 91, 'b': 61, 'c': 62, 'd': 96, 'e': 83, 'k': 69, 'g': 83}
+>>> l = [(v, k) for k, v in d.items()]  # 列表解析
+>>> l
+[(91, 'a'), (61, 'b'), (62, 'c'), (96, 'd'), (83, 'e'), (69, 'k'), (83, 'g')]
+>>> sorted(l, reverse=True)
+[(96, 'd'), (91, 'a'), (83, 'g'), (83, 'e'), (69, 'k'), (62, 'c'), (61, 'b')]
+>>> sorted(zip(d.values(), d.keys()), reverse=True)  # zip方法
+[(96, 'd'), (91, 'a'), (83, 'g'), (83, 'e'), (69, 'k'), (62, 'c'), (61, 'b')]
+>>> sorted(d.items(), key=lambda item: item[1], reverse=True)  # 直接使用sorted的key方法
+[('d', 96), ('a', 91), ('e', 83), ('g', 83), ('k', 69), ('c', 62), ('b', 61)]
+>>>
 ```
+
 
 ```python
-from random import randint
+>>> from random import randint
+>>> l = sorted(d.items(), key=lambda item: item[1], reverse=True)
+>>> l
+[('f', 96), ('c', 95), ('g', 92), ('e', 91), ('b', 78), ('d', 73), ('a', 62)]
 
-d = {k: randint(60, 100) for k in "abcdefg"}
+>>> for i, (k, v) in enumerate(l, 1):  # 更新字典
+...     d[k] = (i, v)
+...
+>>> d
+{'a': (7, 62), 'b': (5, 78), 'c': (2, 95), 'd': (6, 73), 'e': (4, 91), 'f': (1, 96), 'g': (3, 92)}
 
-l = sorted(d.items(), key=lambda item: item[1], reverse=True)
-
-# 更新字典
-for i, (k, v) in enumerate(l, 1):
-    print(i, k, v)
-    d[k] = (i, v)
-
-print(d)
-
-# 重新生成字典
-d_new = {k: (i, v) for i, (k, v) in enumerate(l, 1)}
-print(d_new)
-
+>>> d_new = {k: (i, v) for i, (k, v) in enumerate(l, 1)}  # 新建字典
+>>> d_new
+{'f': (1, 96), 'c': (2, 95), 'g': (3, 92), 'e': (4, 91), 'b': (5, 78), 'd': (6, 73), 'a': (7, 62)}
 ```
+
 
 ## 如何统计序列中元素的频度
 
