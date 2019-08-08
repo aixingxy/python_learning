@@ -370,3 +370,99 @@ TypeError: 'odict_iterator' object is not subscriptable
 ### 实际案例
 
 制作一个简单的猜数字的小游戏，如何添加历史记录功能，显示用户最近猜过的数字？
+
+### 解决方案
+
+使用容量为n的队列存储历史记录，使用标准库collections中的deque，它是一个双端队列
+
+使用pickle模块将历史记录存储到硬盘，以便下次启动使用
+
+
+```python
+>>> from collections import deque
+>>> deque([], 5)
+deque([], maxlen=5)
+>>> q = deque([], 5)
+>>> q.append(1)
+>>> q.append(2)
+>>> q.append(3)
+>>> q.append(4)
+>>> q.append(5)
+>>> q
+deque([1, 2, 3, 4, 5], maxlen=5)
+>>> q.append(6)
+>>> q
+deque([2, 3, 4, 5, 6], maxlen=5)
+>>>
+```
+
+```python
+
+from random import randint
+from collections import deque
+def guess(n, k):
+    if n == k:
+        print("猜对了，这个数字是%d" % k)
+        return True
+
+    if n < k:
+        print("猜大了，比%d小" % k)
+    elif n > k:
+        print("猜小了，比%d大" % k)
+    return False
+
+def main():
+    n = randint(1, 100)
+    i = 1
+    hq = deque([], 5)
+    while True:
+        line = input("[%d] 请输入一个数字：" % i)
+        if line.isdigit():
+            k = int(line)
+            hq.append(k)
+            i += 1
+            if guess(n, k):
+                break
+        elif line == 'quit':
+            break
+        elif line == 'h?':
+            print(list(hq))
+
+if __name__ == '__main__':
+    main()
+
+
+[1] 请输入一个数字：1
+猜小了，比1大
+[2] 请输入一个数字：2
+猜小了，比2大
+[3] 请输入一个数字：3
+猜小了，比3大
+[4] 请输入一个数字：4
+猜小了，比4大
+[5] 请输入一个数字：5
+猜小了，比5大
+[6] 请输入一个数字：6
+猜小了，比6大
+[7] 请输入一个数字：7
+猜小了，比7大
+[8] 请输入一个数字：h?
+[3, 4, 5, 6, 7]
+[8] 请输入一个数字：
+
+```
+
+
+```python
+
+>>> import pickle  # pickl直接将对象保存
+>>> q
+deque([2, 3, 4, 5, 6], maxlen=5)
+>>> pickle.dump(q, open('save.pkl', 'wb'))  # 注意pickle要以二进制形式写入
+>>> q2 = pickle.load(open('save.pkl', 'rb')) # 读也要以二进制读
+>>> q2
+deque([2, 3, 4, 5, 6], maxlen=5)
+>>>
+
+```
+
