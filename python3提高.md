@@ -373,9 +373,9 @@ TypeError: 'odict_iterator' object is not subscriptable
 
 ### 解决方案
 
-使用容量为n的队列存储历史记录，使用标准库collections中的deque，它是一个双端队列
+1. 使用容量为n的队列存储历史记录，使用标准库collections中的deque，它是一个双端队列
 
-使用pickle模块将历史记录存储到硬盘，以便下次启动使用
+2. 使用pickle模块将历史记录存储到硬盘，以便下次启动使用
 
 
 ```python
@@ -465,4 +465,324 @@ deque([2, 3, 4, 5, 6], maxlen=5)
 >>>
 
 ```
+
+
+```python
+from random import randint
+from collections import deque
+import pickle
+import os
+
+
+def guess(n, k):
+    if n == k:
+        print("猜对了，这个数字是%d" % k)
+        return True
+
+    if n < k:
+        print("猜大了，比%d小" % k)
+    elif n > k:
+        print("猜小了，比%d大" % k)
+    return False
+
+
+def main():
+    n = randint(1, 100)
+    i = 1
+    if os.path.exists("hq.pkl"):
+        hq = pickle.load(open("hq.pkl", "rb"))
+    else:
+        hq = deque([], 5)
+
+    while True:
+        line = input("[%d] 请输入一个数字：" % i)
+        if line.isdigit():
+            k = int(line)
+            hq.append(k)
+            i += 1
+            if guess(n, k):
+                break
+        elif line == 'quit':
+            break
+        elif line == 'h?':
+            print(list(hq))
+    pickle.dump(hq, open("hq.pkl", "wb"))
+
+
+if __name__ == '__main__':
+    main()
+
+
+```
+
+
+## 如何拆分含有多种分隔符的字符串
+
+### 实际案例
+
+我们要把某个字符串依据分隔符号拆分不同的字段，该字符串包含多种不同的分隔符，例如
+
+s = 'ab;cd|efg|hi,jkl|mn\opq;rst,uvw\txyz' 
+
+其中<,>，<;>，<|>，<\t>都是分隔符，如何处理
+
+### 解决方案
+
+1. 连续使用str.split()方法，每次处理一种分隔符
+
+```python
+>>> s = 'ab;cd|efg|hi,jkl|mn\opq;rst,uvw\txyz'
+>>> s.split(';')  # 一次只能处理一个分隔符
+['ab', 'cd|efg|hi,jkl|mn\\opq', 'rst,uvw\txyz']
+>>> [ss.split('|') for ss in s.split(';')]
+[['ab'], ['cd', 'efg', 'hi,jkl', 'mn\\opq'], ['rst,uvw\txyz']]
+>>> map(lambda ss: ss.split('|'), s.split(';'))
+<map object at 0x103cc6780>
+>>> list(map(lambda ss: ss.split('|'), s.split(';')))
+[['ab'], ['cd', 'efg', 'hi,jkl', 'mn\\opq'], ['rst,uvw\txyz']]
+>>> t = []
+>>> list(map(t.extend, [ss.split('|') for ss in s.split(';')]))  # 将二维列表转一维列表
+[None, None, None]
+>>> t
+['ab', 'cd', 'efg', 'hi,jkl', 'mn\\opq', 'rst,uvw\txyz']
+>>> sum([ss.split('|') for ss in s.split(';')], [])  # 二维列表转一维列表，注意初始值的设置
+['ab', 'cd', 'efg', 'hi,jkl', 'mn\\opq', 'rst,uvw\txyz']
+>>> def my_split(s, seps):
+...     res = [s]
+...     for sep in seps:
+...             t = []
+...             list(map(lambda ss: t.extend(ss.split(sep)), res))
+...             res = t
+...     return res
+...
+>>> my_split(s, ';|,\t')
+['ab', 'cd', 'efg', 'hi', 'jkl', 'mn\\opq', 'rst', 'uvw', 'xyz']
+>>> from functools import reduce
+>>> reduce(lambda l, sep: sum(map(lambda ss: ss.split(sep), l), []), ',;|\t', [s])  # 注意添加l的初始值
+['ab', 'cd', 'efg', 'hi', 'jkl', 'mn\\opq', 'rst', 'uvw', 'xyz']
+>>>
+```
+
+2. 使用正则表达式的re.split()方法
+```python
+>>> s = 'ab;cd|efg|hi,jkl|mn\opq;rst,uvw\txyz'
+>>> import re
+>>> re.split(r'[,;|\t]+', s)
+['ab', 'cd', 'efg', 'hi', 'jkl', 'mn\\opq', 'rst', 'uvw', 'xyz']
+>>>
+
+```
+
+## 如何判断字符串a是否以字符串b开头或结尾
+
+### 实际案例
+某文件系统目录下有一些列文件：
+quicksort.c
+graph.py
+heap.java
+stack.cpp
+...
+编写程序给其中所有.sh文件和.py文件加上用户可执行权限
+
+## 解决方案
+
+使用str.startswith()和str.endswith()方法
+（注意：多个匹配时参数使用元祖）
+
+```python
+>>> fn.endswith(('.py', '.sh'))
+True
+>>> import os
+>>> os.listdir()
+['python_from_job.md', 'python3提高.md', 'libsample.so', 'python_learning.md', 'learn_deepcopy.md', '线程', 'python3-cookbook', '.gitignore', 'sample.py', '.git', 'main.py', 'save.pkl']
+>>> os.stat('sample.py')  # 查看文件状态信息
+os.stat_result(st_mode=33188, st_ino=12887567929, st_dev=16777221, st_nlink=1, st_uid=501, st_gid=20, st_size=540, st_atime=1565083577, st_mtime=1564885721, st_ctime=1564885721)
+>>> s = os.stat('sample.py')
+>>> s.st_mode
+33188
+>>> oct(s.st_mode)
+'0o100644'
+>>> s.st_mode | 0o100
+33252
+>>> oct(s.st_mode | 0o100)
+'0o100744'
+>>> import stat
+>>> stat.S_IXUSR
+64
+>>> os.chmod('sample.py', s.st_mode | stat.S_IXUSR)  # 改变文件用户执行权限
+```
+
+## 如何调整字符串中文本的格式
+
+### 实际案例
+
+某软件的log文件，其中的日期为'yyyy-mm-dd'
+
+2016-05-21 10:39:26 status unpacked python3-pip:all
+
+...
+
+我们想把其中的日期改为美国日期的格式'mm/dd/yyyy'
+
+2016-05-21 => 05/23/2016
+
+### 解决方案
+
+使用正则表达式re.sub()方法做字符串替换，利用正则表达式的捕获组，捕获每个部分内容，在替换字符串中调整各个捕获组的顺序
+
+
+```python
+>>> f = open('log.log', 'r')
+>>> log = f.read()
+>>> log
+'2019-08-11 10:18:39+08 xxydeMBP system_installd[358]: PackageKit: Install sandbox purging reclaimed 0 KB\n2019-08-11 10:24:09+08 xxydeMBP system_installd[358]: PackageKit: Install sandbox purging reclaimed 0 KB\n2019-08-11 10:29:39+08 xxydeMBP system_installd[358]: PackageKit: Install sandbox purging reclaimed 0 KB\n2019-08-11 10:35:08+08 xxydeMBP system_installd[358]: PackageKit: Install sandbox purging reclaimed 0 KB\n2019-08-11 10:40:39+08 xxydeMBP system_installd[358]: PackageKit: Install sandbox purging reclaimed 0 KB\n'
+>>> import re
+>>> print(re.sub('(\d{4})-(\d{2})-(\d{2})', '\2/\3/\1', log))
+// 10:18:39+08 xxydeMBP system_installd[358]: PackageKit: Install sandbox purging reclaimed 0 KB
+// 10:24:09+08 xxydeMBP system_installd[358]: PackageKit: Install sandbox purging reclaimed 0 KB
+// 10:29:39+08 xxydeMBP system_installd[358]: PackageKit: Install sandbox purging reclaimed 0 KB
+// 10:35:08+08 xxydeMBP system_installd[358]: PackageKit: Install sandbox purging reclaimed 0 KB
+// 10:40:39+08 xxydeMBP system_installd[358]: PackageKit: Install sandbox purging reclaimed 0 KB
+
+>>> '\2'  # 这是一个字符
+'\x02'
+>>> len('\2')
+1
+>>> len('\\2')  # re要这样的字符
+2
+>>> ord('a')
+97
+>>> oct(ord('a'))
+'0o141'
+>>> '\141'
+'a'
+
+>>> print(re.sub(r'(\d{4})-(\d{2})-(\d{2})', r'\2/\3/\1', log))  # 使用r(raw)标记，就不用转义字符了 
+08/11/2019 10:18:39+08 xxydeMBP system_installd[358]: PackageKit: Install sandbox purging reclaimed 0 KB
+08/11/2019 10:24:09+08 xxydeMBP system_installd[358]: PackageKit: Install sandbox purging reclaimed 0 KB
+08/11/2019 10:29:39+08 xxydeMBP system_installd[358]: PackageKit: Install sandbox purging reclaimed 0 KB
+08/11/2019 10:35:08+08 xxydeMBP system_installd[358]: PackageKit: Install sandbox purging reclaimed 0 KB
+08/11/2019 10:40:39+08 xxydeMBP system_installd[358]: PackageKit: Install sandbox purging reclaimed 0 KB
+
+# 用()取组，在替换中使用被分组的内容，组的编号从每个组的左括号在字符串中出现的顺序
+>>> print(re.sub(r'(?P<y>\d{4})-(?P<m>\d{2})-(?P<d>\d{2})', r'\g<m>/\g<d>/\g<y>', log))  # 给组命名
+08/11/2019 10:18:39+08 xxydeMBP system_installd[358]: PackageKit: Install sandbox purging reclaimed 0 KB
+08/11/2019 10:24:09+08 xxydeMBP system_installd[358]: PackageKit: Install sandbox purging reclaimed 0 KB
+08/11/2019 10:29:39+08 xxydeMBP system_installd[358]: PackageKit: Install sandbox purging reclaimed 0 KB
+08/11/2019 10:35:08+08 xxydeMBP system_installd[358]: PackageKit: Install sandbox purging reclaimed 0 KB
+08/11/2019 10:40:39+08 xxydeMBP system_installd[358]: PackageKit: Install sandbox purging reclaimed 0 KB
+
+>>>
+
+```
+
+## 如何将多个小字符串拼接成一个大字符串
+
+### 实际案例
+
+将程序中的歌歌参数按次序收集到列表中：
+["<0112>", "<32>", "<1024>", "<60>"]
+最终要把各个参数拼接成一个数据报进行发送
+"<0112><32><1024><60>"
+
+### 解决方案
+
+1. 迭代列表，连续使用'+'操作以此拼接每一个字符串
+
+2. 使用str.join()方法，更加快速的拼接列表中所有字符串
+
+```python
+In [1]: from functools import reduce
+
+In [2]: l = ["<0112>", "<32>", "<1024>", "<60>"]
+
+In [3]: l
+Out[3]: ['<0112>', '<32>', '<1024>', '<60>']
+
+In [4]: %timeit reduce(str.__add__, l)
+432 ns ± 2.56 ns per loop (mean ± std. dev. of 7 runs, 1000000 loops each)
+
+In [5]: %timeit ''.join(l)
+117 ns ± 0.281 ns per loop (mean ± std. dev. of 7 runs, 10000000 loops each)
+
+```
+
+## 如何对字符串进行左，右，居中对齐
+
+## 实际案例
+
+某字典存储了一些列属性值
+{
+	"loadDist": 100,
+	"SmallCull": 0.04,
+	"DistCull": 500.0,
+	"trilinear": 40,
+	"farclip": 477
+}
+
+在程序中，我们想以工整的格式将其内容输出，如何处理？
+SmallCull: 0.04
+farclip  : 477
+loadDist : 100.0
+trilinear : 40
+
+1. 使用字符串的str.ljust()，str.rjust(),str.center()进行左，右，居中对齐
+
+2. 使用format()方法，传类似'<20'，‘>20’，'^20'参数完成同样任务
+
+```python
+>>> s = 'abc'
+>>> s.ljust(10)
+'abc       '
+>>> s.ljust(10, '*')
+'abc*******'
+>>> s.rjust(10, '*')
+'*******abc'
+>>> s.center(10, '*')
+'***abc****'
+>>> format(s, '<10')
+'abc       '
+>>> format(s, '>10')
+'       abc'
+>>> format(s, '^10')
+'   abc    '
+>>> format(s, '*^10')
+'***abc****'
+>>> format(5, '>10')
+'         5'
+>>> n = 5
+>>> n.__format__('>10')
+'         5'
+>>> format(123, '+')
+'+123'
+>>> format(-123, '+')
+'-123'
+>>> format(-123, '=+10')
+'-      123'
+>>> format(-123, '0=+10')
+'-000000123'
+>>>
+>>> for k, v in d.items():
+...     print(k.ljust(w), ':', v)
+...
+loadDist  : 100
+SmallCull : 0.04
+DistCull  : 500.0
+trilinear : 40
+farclip   : 477
+>>>
+
+```
+
+
+## 如何去掉字符串中不需要的字符
+
+### 实际案例
+
+1.过滤掉用户输入中前后多余的空白字符：' nick2008@gmail.com '
+2.过滤某Windows下编辑文本中的'\r'：'hello word\r\n' 
+3.去掉文本中的unicode组合符号（音调）：'nǐ hǎo, chī fà'
+
+### 
+
 
