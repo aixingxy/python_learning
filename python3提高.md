@@ -783,6 +783,319 @@ farclip   : 477
 2.过滤某Windows下编辑文本中的'\r'：'hello word\r\n' 
 3.去掉文本中的unicode组合符号（音调）：'nǐ hǎo, chī fà'
 
-### 
+### 解决方案
+1.字符串strip()，lstrip()，rstrip()方法去掉字符串两端字符
+2.删掉单个固定位置的字符，可以使用切片+拼接的方法
+3.字符串的replace()方法或正则表达式re.sub()删除任意子串
+4.字符串的translate()方法，可以同时删除多种不同字符
+```python3
+>>> s = 'abc1234xyz'
+>>> s.translate({'a':'x'})  # 键要求是unicode
+'abc1234xyz'
+>>> ord('a')
+97
+>>> s.translate({ord('a'):'X'})
+'Xbc1234xyz'
+>>> s.maketrans('abcxyz', 'XYZABC')
+{97: 88, 98: 89, 99: 90, 120: 65, 121: 66, 122: 67}
+>>> s.translate({97: 88, 98: 89, 99: 90, 120: 65, 121: 66, 122: 67})
+'XYZ1234ABC'
+>>> s.translate({ord('a'): None})
+'bc1234xyz'
+```
+
+
+## 如何实现可迭代对象和迭代器对象
+
+迭代器对象 ：Iterator
+可迭代对象 ：Iterable
+
+
+## 如何实现可迭代对象和迭代器对象
+
+### 实际案例
+
+某软件要求，从网络抓取各个城市气温信息，并依次显示：
+北京：15-20
+天津：15-22
+长春：12-18
+......
+
+如果依次抓取所有城市气温再显示，显示第一个城市气温时，有很高的延时，并且浪费存储空间。我们期望以“用时访问”的策略，并且能把所有城市气温封装到一个对象里，可用for语句进行迭代，如何解决？
+
+```python
+>>> from collections import Iterable, Iterator
+>>> l = [1, 2, 3]
+>>> for x in l:
+...     print(x)
+...
+1
+2
+3 
+>>> isinstance(l, Iterable)  # 能放在for循环in后面的一定是可迭代对象
+True
+>>> issubclass(list, Iterable)  # 换一种描述，list是Iterable的子类
+True
+>>> issubclass(str, Iterable)
+True
+>>> issubclass(dict, Iterable)
+True
+>>> issubclass(int, Iterable)  # int不能放到in后面
+False
+
+# for循环拿到可迭代对象后调用iter()方法，生成迭代器对象， 
+>>> iter(l)
+<list_iterator object at 0x103473208>
+>>> iter(l)
+<list_iterator object at 0x103473710>
+>>>
+# 每次调用会生成不同的迭代器对象
+# iter()是通过调用可迭代对象的__iter__方法 
+>>> l.__iter__()
+<list_iterator object at 0x103473208>
+>>> Iterable.__abstractmethods__  # 查看抽象方法
+frozenset({'__iter__'})
+>>> it = iter(l)
+>>> next(it)
+1
+>>> next(it)
+2
+>>> next(it)
+3
+>>> next(it)
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+StopIteration
+# netx()方法是调用迭代器对象的__next__方法
+```
+
+```python
+# 迭代器是一次性消费的
+>>> l = [1, 2, 3]
+>>> it = iter(l)
+>>> next(it)
+1
+>>> list(it)
+[2, 3]
+>>> next(it)  # list操作已经把迭代器消耗了
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+StopIteration
+```
+
+```python
+# 迭代器也能放到in后面
+# 说明迭代器对象是可迭代对象的子类
+>>> issubclass(Iterator, Iterable)
+True
+>>> it = iter(l)
+>>> it.__iter__()  # 迭代器对象下也有__iter__方法，它返回的是自身
+<list_iterator object at 0x103559208>
+>>> it.__iter__() is it
+True
+# 说明it既是迭代器对象，也是可迭代对象，如果调用可迭代接口，返回它自己
+# for循环中放入迭代器对象，它还是会先调用__iter__()方法，尽管它返回它自己
+```
+
+### 解决方法
+
+1. 实现一个迭代器对象Weatheriterator,__next__方法每次返回一个城市的气温
+
+2. 实现一个可迭代对象Weatheriterable,__iter__方法返回一个Weatheriterator对象
+
+```python
+from collections import Iterable, Iterator
+import requests
+
+
+class WeatherIterator(Iterator):
+    def __init__(self, citys):
+        self.citys = citys
+        self.index = 0
+
+    def __next__(self):  # 迭代器对象实现__next__方法
+        if self.index == len(self.citys):
+            raise StopIteration
+        city = self.citys[self.index]
+        self.index += 1
+        return self.get_weather(city)
+
+    def get_weather(self, city):
+        url = 'http://wthrcdn.etouch.cn/weather_mini?city=' + city
+        r = requests.get(url)
+        data = r.json()['data']['forecast'][0]
+        return city, data['high'], data['low']
+
+    # 迭代器如果有__iter__方法，应该返回自己
+
+
+class WeatherIterable(Iterable):
+    def __init__(self, citys):
+        self.citys = citys
+
+    def __iter__(self):  # 可迭代对象实现__iter__方法，返回其迭代器对象
+        return WeatherIterator(self.citys)
+
+
+def show(w):
+    for x in w:
+        print(x)
+
+
+print("创建可迭代对象")
+w = WeatherIterable(['北京', '上海', '广州'] * 3)
+show(w)
+print('*' * 20)
+show(w)  # 每次都会创建一个迭代器
+
+print("创建迭代器对象", end='\n\n')
+
+w1 = WeatherIterator(['北京', '上海', '广州'] * 3)
+show(w1)
+print('*' * 20)
+show(w1)  # 这个不会打印，因为迭代器对象是一次性的，只能迭代一次，消耗完了就没了
+
+"""
+创建可迭代对象
+('北京', '高温 32℃', '低温 22℃')
+('上海', '高温 33℃', '低温 26℃')
+('广州', '高温 35℃', '低温 26℃')
+('北京', '高温 32℃', '低温 22℃')
+('上海', '高温 33℃', '低温 26℃')
+('广州', '高温 35℃', '低温 26℃')
+('北京', '高温 32℃', '低温 22℃')
+('上海', '高温 33℃', '低温 26℃')
+('广州', '高温 35℃', '低温 26℃')
+********************
+('北京', '高温 32℃', '低温 22℃')
+('上海', '高温 33℃', '低温 26℃')
+('广州', '高温 35℃', '低温 26℃')
+('北京', '高温 32℃', '低温 22℃')
+('上海', '高温 33℃', '低温 26℃')
+('广州', '高温 35℃', '低温 26℃')
+('北京', '高温 32℃', '低温 22℃')
+('上海', '高温 33℃', '低温 26℃')
+('广州', '高温 35℃', '低温 26℃')
+创建迭代器对象
+
+('北京', '高温 32℃', '低温 22℃')
+('上海', '高温 33℃', '低温 26℃')
+('广州', '高温 35℃', '低温 26℃')
+('北京', '高温 32℃', '低温 22℃')
+('上海', '高温 33℃', '低温 26℃')
+('广州', '高温 35℃', '低温 26℃')
+('北京', '高温 32℃', '低温 22℃')
+('上海', '高温 33℃', '低温 26℃')
+('广州', '高温 35℃', '低温 26℃')
+********************
+
+"""
+```
+
+## 如何使用生成器函数实现可迭代对象
+
+### 实际案例
+
+实现一个可迭代对象的类，它能迭代出给定范围所有素数：
+
+pn = PrimeNumbers(1, 30)
+for k in pn:
+	print(k)
+
+输出结果：
+2 3 4 7 11 13 17 19 23 29
+
+### 解决方案
+将该类的__iter__方法实现成生成器函数，每次yield返回一个素数
+
+```python
+>>> def f():
+...     print('in f 1')
+...     yield 1
+...     print('in f 2')
+...     yield 2
+...     print('in f 3')
+...     yield 3
+...
+>>> f()  # 产生一个迭代器
+<generator object f at 0x104670fc0>
+>>> g = f()
+>>> from collections import Iterable, Iterator
+>>> isinstance(g, Iterable)
+True
+>>> isinstance(g, Iterator)
+True
+>>> iter(g) is g
+True
+>>> g.__iter__() is g
+True
+>>> next(g)
+in f 1
+1
+>>> next(g)
+in f 2
+2
+>>> next(g)
+in f 3
+3
+>>> next(g)
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+StopIteration
+
+>>> class XXX_Iterable(Iterable):
+...     def __iter__(self):
+...             yield 1
+...             yield 2
+...             yield 3
+...
+>>> # 创建一个可迭代对象，在__iter__中使用yield方法，就不用创建迭代器对象了。
+...
+>>> x = XXX_Iterable()
+>>> for i in x:  # 先调用iter(x)，就得到了一个生成器对象，生成器对象是一个可迭代对象，然后就可以迭代
+...     print(i)  # 就可以把迭代器的实现放到__iter__里面就可以了。用生成器函数实现迭代器
+...
+1
+2
+3
+>>>
+
+```
+
+```python
+
+from collections import Iterable
+
+class PrimeNumbers(Iterable):
+    def __init__(self, a, b):
+        self.a = a
+        self.b = b
+
+    def __iter__(self):
+        for k in range(self.a, self.b + 1):
+            if self.is_prime(k):
+                yield k
+
+    def is_prime(self, k):
+        return False if k < 2 else all(map(lambda x: k % x , range(2, k)))
+        # 小于2直接返回False
+        # 大于2的依次与k-1取模，如果有一个0，all就返回False，否则返回True
+
+pn = PrimeNumbers(1, 30)
+for n in pn:
+    print(n)
+
+```
+
+
+
+
+
+
+
+
+
+
+
 
 
